@@ -1,7 +1,7 @@
 -- +goose Up
 CREATE TABLE documents (
     id SERIAL PRIMARY KEY,
-    owner_id UUID NOT NULL REFERENCES users(uid) ON DELETE CASCADE,
+    owner_id UUID NOT NULL,
     name VARCHAR(255) NOT NULL,
     content TEXT NOT NULL,
     is_private BOOLEAN NOT NULL DEFAULT TRUE,
