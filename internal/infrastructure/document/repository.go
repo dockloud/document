@@ -24,7 +24,7 @@ type RepositoryWithCache struct {
 	cache *redis.Client
 }
 
-func NewRepositoryWithCache(db *sql.DB, cache *redis.Client) *RepositoryWithCache {
+func NewRepository(db *sql.DB, cache *redis.Client) *RepositoryWithCache {
 	return &RepositoryWithCache{
 		db:    db,
 		cache: cache,

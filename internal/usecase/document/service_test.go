@@ -328,7 +328,7 @@ func TestService_Create(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			svc := newTestService(t, tt.setup)
 
-			got, err := svc.Create(context.Background(), tt.input)
+			got, err := svc.Create(context.Background(), &tt.input)
 			assertError(t, err, tt.wantErr)
 			if tt.wantErr != nil {
 				if got != nil {
@@ -377,7 +377,7 @@ func TestService_Delete(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			svc := newTestService(t, tt.setup)
 
-			err := svc.Delete(context.Background(), tt.input)
+			err := svc.Delete(context.Background(), &tt.input)
 			assertError(t, err, tt.wantErr)
 		})
 	}
@@ -441,7 +441,7 @@ func TestService_Update(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			svc := newTestService(t, tt.setup)
 
-			got, err := svc.Update(context.Background(), tt.input)
+			got, err := svc.Update(context.Background(), &tt.input)
 			assertError(t, err, tt.wantErr)
 			if tt.wantErr != nil {
 				if got != nil {
@@ -492,7 +492,7 @@ func TestService_GetUnsafe(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			svc := newTestService(t, tt.setup)
 
-			got, err := svc.GetUnsafe(context.Background(), tt.input)
+			got, err := svc.GetUnsafe(context.Background(), &tt.input)
 			assertError(t, err, tt.wantErr)
 			if tt.wantErr != nil {
 				if got != nil {
@@ -541,7 +541,7 @@ func TestService_DeleteUnsafe(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			svc := newTestService(t, tt.setup)
 
-			err := svc.DeleteUnsafe(context.Background(), tt.input)
+			err := svc.DeleteUnsafe(context.Background(), &tt.input)
 			assertError(t, err, tt.wantErr)
 		})
 	}
@@ -554,7 +554,7 @@ func TestService_UpdateUnsafe(t *testing.T) {
 		name    string
 		input   UpdateUnsafeInput
 		setup   func(m *mocks.MockRepository)
-		want    *GetDocumentOutput
+		want    *UpdateOutput
 		wantErr error
 	}{
 		{
@@ -570,7 +570,7 @@ func TestService_UpdateUnsafe(t *testing.T) {
 					UpdateUnsafe(gomock.Any(), 7, gomock.Eq(strPtr("New name")), gomock.Eq(strPtr("New content")), gomock.Eq(boolPtr(true))).
 					Return(updated, nil)
 			},
-			want: &GetDocumentOutput{ID: 7, OwnerID: "owner-1", Name: "New name", Content: "New content", IsPrivate: true, CreatedAt: createdAt, EditedAt: editedAt},
+			want: &UpdateOutput{ID: 7, Name: "New name", Content: "New content", IsPrivate: true, EditedAt: editedAt},
 		},
 		{
 			name:  "repository failed",
@@ -588,7 +588,7 @@ func TestService_UpdateUnsafe(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			svc := newTestService(t, tt.setup)
 
-			got, err := svc.UpdateUnsafe(context.Background(), tt.input)
+			got, err := svc.UpdateUnsafe(context.Background(), &tt.input)
 			assertError(t, err, tt.wantErr)
 			if tt.wantErr != nil {
 				if got != nil {
