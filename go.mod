@@ -3,6 +3,7 @@ module github.com/dockloud/document
 go 1.27.1
 
 require (
+	github.com/golang/mock v1.6.0
 	github.com/lib/pq v1.12.3
 	github.com/pressly/goose/v3 v3.29.0
 	github.com/redis/go-redis/v9 v9.23.0

@@ -23,7 +23,7 @@ func ValidateName(title string) error {
 }
 
 func ValidateContent(body string) error {
-	if len(body) < MAX_BODY_LEN {
+	if len(body) > MAX_BODY_LEN {
 		return ErrBodyTooLong
 	}
 	return nil

@@ -45,6 +45,9 @@ func (s *Service) GetByAuthorID(ctx context.Context, input *GetByAuthorIDInput) 
 func (s *Service) GetAccessible(ctx context.Context, input *GetAccessibleInput) ([]GetDocumentOutput, error) {
 	var mapped []GetDocumentOutput
 	res, err := s.documentRepo.GetAccessible(ctx, input.RequesterID)
+	if err != nil {
+		return nil, err
+	}
 	for _, doc := range res {
 		output := DomainToOutputDTO(doc)
 		mapped = append(mapped, *output)
