@@ -5,38 +5,38 @@ import (
 	"github.com/dockloud/document/internal/usecase/document"
 )
 
-func ToGetAccessibleInput(req *docv1.GetAccessibleDocumentsRequest) *document.GetAccessibleInput {
+func ToGetAccessibleInput(req *docv1.GetAccessibleDocumentsRequest, uid string) *document.GetAccessibleInput {
 	return &document.GetAccessibleInput{
-		RequesterID: req.RequesterUid,
+		RequesterID: uid,
 	}
 }
 
-func ToGetByAuthorIDInput(req *docv1.GetDocumentsByAuthorIDRequest) *document.GetByAuthorIDInput {
+func ToGetByAuthorIDInput(req *docv1.GetDocumentsByAuthorIDRequest, uid string) *document.GetByAuthorIDInput {
 	return &document.GetByAuthorIDInput{
 		AuthorID:    req.AuthorUid,
-		RequesterID: req.RequesterUid,
+		RequesterID: uid,
 	}
 }
 
-func ToGetByDocumentIDInput(req *docv1.GetDocumentByIDRequest) *document.GetByDocumentIDInput {
+func ToGetByDocumentIDInput(req *docv1.GetDocumentByIDRequest, uid string) *document.GetByDocumentIDInput {
 	return &document.GetByDocumentIDInput{
 		DocumentID:  int(req.DocumentId),
-		RequesterID: req.RequesterUid,
+		RequesterID: uid,
 	}
 }
 
-func ToCreateInput(req *docv1.CreateDocumentRequest) *document.CreateInput {
+func ToCreateInput(req *docv1.CreateDocumentRequest, uid string) *document.CreateInput {
 	return &document.CreateInput{
-		OwnerID:   req.RequesterUid,
+		OwnerID:   uid,
 		Name:      req.Name,
 		Content:   req.Content,
 		IsPrivate: req.IsPrivate,
 	}
 }
 
-func ToUpdateInput(req *docv1.UpdateDocumentRequest) *document.UpdateInput {
+func ToUpdateInput(req *docv1.UpdateDocumentRequest, uid string) *document.UpdateInput {
 	return &document.UpdateInput{
-		OwnerID:   req.RequesterUid,
+		OwnerID:   uid,
 		ID:        int(req.DocumentId),
 		Name:      req.Name,
 		Content:   req.Content,
@@ -44,10 +44,10 @@ func ToUpdateInput(req *docv1.UpdateDocumentRequest) *document.UpdateInput {
 	}
 }
 
-func ToDeleteInput(req *docv1.DeleteDocumentRequest) *document.DeleteInput {
+func ToDeleteInput(req *docv1.DeleteDocumentRequest, uid string) *document.DeleteInput {
 	return &document.DeleteInput{
 		DocumentID:  int(req.DocumentId),
-		RequesterID: req.RequesterUid,
+		RequesterID: uid,
 	}
 }
 

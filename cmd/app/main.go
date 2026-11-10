@@ -12,6 +12,8 @@ import (
 	"github.com/dockloud/document/internal/infrastructure/document"
 	usecase "github.com/dockloud/document/internal/usecase/document"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/health"
+	healthpb "google.golang.org/grpc/health/grpc_health_v1"
 )
 
 func main() {
@@ -28,14 +30,18 @@ func main() {
 	repo := document.NewRepository(db, cache)
 	service := usecase.NewService(repo)
 
-	listener, err := net.Listen("tcp", ":50250")
+	listener, err := net.Listen("tcp", ":50150")
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}
 
 	grpcServer := grpc.NewServer()
-	docv1.RegisterDocumentServiceServer(grpcServer, myserver.NewDocumentServer(*service))
 
+	healthServer := health.NewServer()
+	healthpb.RegisterHealthServer(grpcServer, healthServer)
+	healthServer.SetServingStatus("", healthpb.HealthCheckResponse_SERVING)
+
+	docv1.RegisterDocumentServiceServer(grpcServer, myserver.NewDocumentServer(*service))
 	if err := grpcServer.Serve(listener); err != nil {
 		log.Fatalf("failed to serve: %v", err)
 	}

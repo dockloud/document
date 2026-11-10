@@ -18,7 +18,6 @@ var (
 	editedAt  = time.Date(2025, 2, 20, 12, 0, 0, 0, time.UTC)
 )
 
-// Один и тот же экземпляр ошибки и в setup, и в wantErr — чтобы errors.Is работал.
 var (
 	errGetByAuthorFailed   = errors.New("get by author failed")
 	errGetAccessibleFailed = errors.New("get accessible failed")
@@ -56,9 +55,6 @@ func (nilBoolPtrMatcher) Matches(x interface{}) bool {
 
 func (nilBoolPtrMatcher) String() string { return "nil *bool" }
 
-// newTestService собирает Service с моком репозитория.
-// Если setup не задан — никаких вызовов репозитория не ожидается,
-// и любой реальный вызов провалит тест.
 func newTestService(t *testing.T, setup func(m *mocks.MockRepository)) *Service {
 	t.Helper()
 
