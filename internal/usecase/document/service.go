@@ -86,6 +86,18 @@ func (s *Service) Delete(ctx context.Context, input *DeleteInput) error {
 }
 
 func (s *Service) Update(ctx context.Context, input *UpdateInput) (*UpdateOutput, error) {
+	if input.Name != nil {
+		if err := document.ValidateName(*input.Name); err != nil {
+			return nil, err
+		}
+	}
+
+	if input.Content != nil {
+		if err := document.ValidateContent(*input.Content); err != nil {
+			return nil, err
+		}
+	}
+
 	res, err := s.documentRepo.Update(ctx, input.ID, input.OwnerID, input.Name, input.Content, input.IsPrivate)
 	if err != nil {
 		return nil, err

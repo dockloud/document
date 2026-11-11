@@ -151,6 +151,10 @@ func (r *RepositoryWithCache) GetByID(
 			break
 		}
 
+		if !d.IsPrivate || d.OwnerID == requesterID {
+			return &d, nil
+		}
+
 	case errors.Is(err, redis.Nil):
 		// cache miss
 
@@ -191,8 +195,10 @@ func (r *RepositoryWithCache) GetByID(
 			logger.Println("unable to put value to cache")
 			return nil, err
 		}
+		return d, nil
 	}
-	return d, nil
+
+	return nil, ErrDocumentNotFound
 }
 
 func (r *RepositoryWithCache) Create(
