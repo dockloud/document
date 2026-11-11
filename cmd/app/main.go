@@ -36,19 +36,19 @@ func main() {
 		log.Fatalf("failed to listen: %v", err)
 	}
 
-	keyering := auth.Keyring{
-		"gateway-key": {
+	keyring := auth.Keyring{
+		"dck-gateway-v1": {
 			ID:      "dck-gateway-v1",
 			Service: "dockloud-gateway",
 			Secret:  []byte(os.Getenv("GATEWAY_SERVICE_KEY")),
 		},
-		"link-key": {
+		"dck-link-v1": {
 			ID:      "dck-link-v1",
 			Service: "dockloud-link",
 			Secret:  []byte(os.Getenv("LINK_SERVICE_KEY")),
 		},
 	}
-	authInterceptor, err := auth.NewKeyringInterceptor(keyering)
+	authInterceptor, err := auth.NewKeyringInterceptor(keyring)
 	if err != nil {
 		log.Fatalf("failed to create interceptor: %v", err)
 	}
