@@ -43,7 +43,7 @@ func main() {
 			Secret:  []byte(os.Getenv("GATEWAY_SERVICE_KEY")),
 		},
 		"dck-link-v1": {
-			ID:      "lnk-link-v1",
+			ID:      "dck-link-v1",
 			Service: "dockloud-link",
 			Secret:  []byte(os.Getenv("LINK_SERVICE_KEY")),
 		},

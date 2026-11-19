@@ -16,7 +16,7 @@ import (
 var ErrNoUIDPassed = errors.New("no UID passed")
 var ErrAccessDeclined = errors.New("access declined")
 var LinkServicePrincipals = serviceauth.Principal{
-	KeyID:   "lnk-link-v1",
+	KeyID:   "dck-link-v1",
 	Service: "dockloud-link",
 }
 
