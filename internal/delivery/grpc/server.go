@@ -6,12 +6,19 @@ import (
 	"log"
 
 	docv1 "github.com/dockloud/contract/gen/document/v1"
+	"github.com/dockloud/document/internal/delivery/grpc/auth"
 	"github.com/dockloud/document/internal/delivery/grpc/mapper"
 	"github.com/dockloud/document/internal/usecase/document"
+	serviceauth "github.com/dockloud/service-auth/core"
 	"github.com/dockloud/user-auth/pkg/transport/grpc/metadata"
 )
 
 var ErrNoUIDPassed = errors.New("no UID passed")
+var ErrAccessDeclined = errors.New("access declined")
+var LinkServicePrincipals = serviceauth.Principal{
+	KeyID:   "lnk-link-v1",
+	Service: "dockloud-link",
+}
 
 type documentServer struct {
 	docv1.UnimplementedDocumentServiceServer
@@ -149,6 +156,11 @@ func (s *documentServer) DeleteDocument(ctx context.Context, req *docv1.DeleteDo
 func (s *documentServer) GetUnsafeDocument(ctx context.Context, req *docv1.GetUnsafeDocumentRequest) (*docv1.GetUnsafeDocumentResponse, error) {
 	s.logger.Printf("Received GetUnsafeDocumentRequest %+v", req)
 
+	err := auth.IdentifyCallerService(ctx, LinkServicePrincipals)
+	if err != nil {
+		return nil, ErrAccessDeclined
+	}
+
 	input := mapper.ToGetUnsafeInput(req)
 	res, err := s.service.GetUnsafe(ctx, input)
 
@@ -162,6 +174,11 @@ func (s *documentServer) GetUnsafeDocument(ctx context.Context, req *docv1.GetUn
 
 func (s *documentServer) UpdateUnsafeDocument(ctx context.Context, req *docv1.UpdateUnsafeDocumentRequest) (*docv1.UpdateUnsafeDocumentResponse, error) {
 	s.logger.Printf("Received UpdateUnsafeDocumentRequest %+v", req)
+
+	err := auth.IdentifyCallerService(ctx, LinkServicePrincipals)
+	if err != nil {
+		return nil, ErrAccessDeclined
+	}
 
 	input := mapper.ToUpdateUnsafeInput(req)
 	res, err := s.service.UpdateUnsafe(ctx, input)
@@ -177,8 +194,13 @@ func (s *documentServer) UpdateUnsafeDocument(ctx context.Context, req *docv1.Up
 func (s *documentServer) DeleteUnsafeDocument(ctx context.Context, req *docv1.DeleteUnsafeDocumentRequest) (*docv1.DeleteUnsafeDocumentResponse, error) {
 	s.logger.Printf("Received DeleteUnsafeDocumentRequest %+v", req)
 
+	err := auth.IdentifyCallerService(ctx, LinkServicePrincipals)
+	if err != nil {
+		return nil, ErrAccessDeclined
+	}
+
 	input := mapper.ToDeleteUnsafeInput(req)
-	err := s.service.DeleteUnsafe(ctx, input)
+	err = s.service.DeleteUnsafe(ctx, input)
 
 	if err != nil {
 		s.logger.Printf("Failed to delete unsafe document %+v", req)
