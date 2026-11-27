@@ -3,7 +3,7 @@ module github.com/dockloud/document
 go 1.27.4
 
 require (
-	github.com/dockloud/config v0.0.0-20261124083932-f10bb6432cb0
+	github.com/dockloud/config v0.0.0-20261127071035-8f160e4df146
 	github.com/dockloud/contract v0.0.0-20261119064745-e77b1560f74d
 	github.com/dockloud/service-auth v0.0.0-20261111043837-db5419a71a29
 	github.com/dockloud/user-auth v0.0.0-20261120070619-f17894a9c313

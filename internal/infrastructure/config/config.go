@@ -10,10 +10,12 @@ import (
 )
 
 type viperConfig struct {
-	Name      string `mapstructure:"name"`
-	ID        string `mapstructure:"id"`
-	Container string `mapstructure:"container"`
-	Port      string `mapstructure:"port"`
+	Service struct {
+		Name      string `mapstructure:"name"`
+		ID        string `mapstructure:"id"`
+		Container string `mapstructure:"container"`
+		Port      string `mapstructure:"port"`
+	} `mapstructure:"service"`
 
 	Database struct {
 		User    string `mapstructure:"user"`
@@ -25,7 +27,7 @@ type viperConfig struct {
 		URL string `mapstructure:"url"`
 	} `mapstructure:"redis"`
 
-	Dependencies []struct {
+	Dependencies map[string]struct {
 		Name string `mapstructure:"name"`
 		ID   string `mapstructure:"id"`
 	} `mapstructure:"dependencies"`
@@ -106,10 +108,10 @@ func (c viperConfig) ToMergedConfig(secr secrets) *model.MergedConfig {
 	dbURL := u.String()
 
 	return &model.MergedConfig{
-		Name:      c.Name,
-		ID:        c.ID,
-		Container: c.Container,
-		Port:      c.Port,
+		Name:      c.Service.Name,
+		ID:        c.Service.ID,
+		Container: c.Service.Container,
+		Port:      c.Service.Port,
 		JWT: model.JWTConfig{
 			ServiceSecret: []byte(secr.ServiceToken),
 			GatewaySecret: []byte(secr.GatewayToken),
