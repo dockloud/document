@@ -6,6 +6,7 @@ import (
 	"log"
 	"os"
 
+	"github.com/dockloud/document/internal/infrastructure/config"
 	"github.com/dockloud/document/internal/infrastructure/database/postgres/migrations"
 	_ "github.com/lib/pq"
 	"github.com/pressly/goose/v3"
@@ -16,12 +17,12 @@ func main() {
 		log.Fatal("usage: migrate <up|down|status>")
 	}
 
-	dsn := os.Getenv("DATABASE_URL")
-	if dsn == "" {
-		log.Fatal("DATABASE_URL is required")
+	conf, err := config.LoadMergedConfig()
+	if err != nil {
+		log.Fatal(err)
 	}
 
-	db, err := sql.Open("postgres", dsn)
+	db, err := sql.Open("postgres", conf.Database.URL)
 	if err != nil {
 		log.Fatal(err)
 	}

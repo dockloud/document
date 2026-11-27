@@ -3,12 +3,12 @@ package main
 import (
 	"log"
 	"net"
-	"os"
 
 	docv1 "github.com/dockloud/contract/gen/document/v1"
 	myserver "github.com/dockloud/document/internal/delivery/grpc"
 	"github.com/dockloud/document/internal/delivery/grpc/auth"
 	"github.com/dockloud/document/internal/infrastructure/cache/redis"
+	"github.com/dockloud/document/internal/infrastructure/config"
 	"github.com/dockloud/document/internal/infrastructure/database/postgres"
 	"github.com/dockloud/document/internal/infrastructure/document"
 	usecase "github.com/dockloud/document/internal/usecase/document"
@@ -18,12 +18,17 @@ import (
 )
 
 func main() {
-	db, err := postgres.NewDB(os.Getenv("DATABASE_URL"))
+	conf, err := config.LoadMergedConfig()
+	if err != nil {
+		log.Fatalf("failed to load config: %s", err)
+	}
+
+	db, err := postgres.NewDB(conf.Database.URL)
 	if err != nil {
 		log.Fatalf("failed to connect to database: %s", err)
 	}
 
-	cache, err := redis.NewCache(os.Getenv("CACHE_URL"))
+	cache, err := redis.NewCache(conf.Redis.URL)
 	if err != nil {
 		log.Fatalf("failed to connect to cache: %s", err)
 	}
@@ -31,21 +36,30 @@ func main() {
 	repo := document.NewRepository(db, cache)
 	service := usecase.NewService(repo)
 
-	listener, err := net.Listen("tcp", ":50150")
+	listener, err := net.Listen("tcp", conf.Port)
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}
 
+	gwayConf, ok := conf.Dependencies["dockloud-gateway"]
+	if !ok {
+		log.Fatalf("failed to load dependencies")
+	}
+	linkConf, ok := conf.Dependencies["dockloud-link"]
+	if !ok {
+		log.Fatalf("failed to load dependencies")
+	}
+
 	keyring := auth.Keyring{
-		"dck-gateway-v1": {
-			ID:      "dck-gateway-v1",
-			Service: "dockloud-gateway",
-			Secret:  []byte(os.Getenv("GATEWAY_SERVICE_KEY")),
+		gwayConf.ID: {
+			ID:      gwayConf.ID,
+			Service: gwayConf.Name,
+			Secret:  conf.JWT.GatewaySecret,
 		},
-		"dck-link-v1": {
-			ID:      "dck-link-v1",
-			Service: "dockloud-link",
-			Secret:  []byte(os.Getenv("LINK_SERVICE_KEY")),
+		linkConf.ID: {
+			ID:      linkConf.ID,
+			Service: linkConf.Name,
+			Secret:  conf.JWT.GatewaySecret,
 		},
 	}
 	authInterceptor, err := auth.NewKeyringInterceptor(keyring)
